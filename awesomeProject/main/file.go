@@ -1,13 +1,15 @@
 package main
 
 import (
-					"log"
-			"net/http"
-	"github.com/gorilla/mux"
-	"os"
-			"encoding/csv"
+	"encoding/csv"
 	"fmt"
-	)
+	"github.com/gorilla/mux"
+	"log"
+	"net/http"
+	"os"
+)
+
+var fileNameMain = "Members.csv"
 
 func CreateMemberInFile(w http.ResponseWriter, r *http.Request)  {
 
@@ -26,9 +28,10 @@ func CreateMemberInFile(w http.ResponseWriter, r *http.Request)  {
 		defer file.Close()
 		fileWriteErr = writeFile(file, member)
 	} else {
-		os.Create("Members.csv")
-		checkError("Cannot create file", err)
-		file.Close()
+		//os.Create("Members.csv")
+		//checkError("Cannot create file", err)
+		//file.Close()
+		DownloadFileFromGDrive("Members.csv")
 		file, err := os.OpenFile("Members.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 		defer file.Close()
 		checkError("Cannot create file", err)
@@ -65,17 +68,33 @@ func writeFile(file *os.File, member []string) (err string) {
 
 func ReadAllMembersInFile(w http.ResponseWriter, r *http.Request)  {
 
-	file, err := os.Open("Members.csv")
-	defer file.Close()
-	checkError("Cannot create file", err)
+	//file, err := os.Open("Members.csv")
+	//defer file.Close()
+	//checkError("Cannot create file", err)
+	//
+	//if file != nil {
+	//	reader := csv.NewReader(file)
+	//	members, err := reader.ReadAll()
+	//
+	//	if err != nil {
+	//		fmt.Fprintln(w, err)
+	//	}
+	//	fmt.Fprintln(w, members)
+	//} else {
 
-	reader := csv.NewReader(file)
-	members, err := reader.ReadAll()
+		file, err := os.Open(fileNameMain)
+		defer file.Close()
+		checkError("Cannot create file", err)
+		reader := csv.NewReader(file)
+		members, err := reader.ReadAll()
 
-	if err != nil {
-		fmt.Fprintln(w, err)
-	}
-	fmt.Fprintln(w, members)
+		if err != nil {
+			fmt.Fprintln(w, err)
+		}
+		fmt.Fprintln(w, members)
+	//}
+
+
 }
 
 func FindMemberInFileByPhoneNumber(w http.ResponseWriter, r *http.Request)  {

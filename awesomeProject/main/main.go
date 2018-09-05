@@ -7,17 +7,20 @@ import (
 	"log"
 )
 
-
-
-
+var fileName  = "Members.csv"
 func helloWorld(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprintf(w, "Hello World")
+}
+
+func downloadFile(w http.ResponseWriter, r *http.Request)  {
+	DownloadFileFromGDrive(fileName)
 }
 
 func handleRequest()  {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/", helloWorld)
+	router.HandleFunc("/downloadFile", downloadFile)
 	router.HandleFunc("/members", AllMembers).Methods("GET")
 	router.HandleFunc("/membersFile", ReadAllMembersInFile).Methods("GET")
 	router.HandleFunc("/memberFile/{phNumber}", FindMemberInFileByPhoneNumber).Methods("GET")
@@ -31,8 +34,7 @@ func handleRequest()  {
 
 func main()  {
 	fmt.Println("Hello")
-
 	InitialMigration()
-
 	handleRequest()
+
 }
